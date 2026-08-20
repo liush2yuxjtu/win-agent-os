@@ -175,8 +175,13 @@ function main(): void {
 
 	// ③ 生成组合 + 透传 eve 命令。本地 eval 默认用 just-bash，远程 target 不受影响。
 	syncProfile(profileName);
-	const env: NodeJS.ProcessEnv = { ...process.env, EVE_EXTENSION_PROFILE: profileName };
-	const remoteEval = command === "eval" && rest.some((arg) => arg === "--url" || arg.startsWith("--url="));
+	const env: NodeJS.ProcessEnv = {
+		...process.env,
+		EVE_EXTENSION_PROFILE: profileName,
+	};
+	const remoteEval =
+		command === "eval" &&
+		rest.some((arg) => arg === "--url" || arg.startsWith("--url="));
 	if (command === "eval" && !remoteEval) env.EVE_SANDBOX_BACKEND ??= "justbash";
 	const r = spawnSync("eve", [command, ...rest], {
 		cwd: ROOT,

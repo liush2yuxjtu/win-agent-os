@@ -2,7 +2,11 @@ import { defineSandbox } from "eve/sandbox";
 import { justbash } from "eve/sandbox/just-bash";
 import { agentbayBackend } from "./lib/agentbay/backend";
 import { resolveApiKey } from "./lib/agentbay/client";
-import { decideQuotaEvictions, IDLE_MS, MAX_SANDBOXES_PER_USER } from "./lib/sandbox-reclaim";
+import {
+	decideQuotaEvictions,
+	IDLE_MS,
+	MAX_SANDBOXES_PER_USER,
+} from "./lib/sandbox-reclaim";
 
 /**
  * 沙箱后端：AgentBay（远程沙盒）优先；未配置 AGENTBAY_API_KEY 时回退
@@ -35,21 +39,21 @@ import { decideQuotaEvictions, IDLE_MS, MAX_SANDBOXES_PER_USER } from "./lib/san
  *    对话上下文照常恢复。
  */
 interface SandboxIdleEntry {
-  /** 会话归属用户（auth principalId ?? subject，匿名 "*"）。 */
-  userId: string;
-  /** 最近一次活动时间（Date.now()，配额回收排序依据）。 */
-  lastActivityAt: number;
-  /** 闲置回收计时器（到期 evict 本会话）。 */
-  timer: ReturnType<typeof setTimeout>;
-  /** 会话沙盒句柄获取（回收时 stop 用；onSession 闭包，跨回调可用）。 */
-  getSandbox: () => Promise<{ stop: () => Promise<void> }>;
+	/** 会话归属用户（auth principalId ?? subject，匿名 "*"）。 */
+	userId: string;
+	/** 最近一次活动时间（Date.now()，配额回收排序依据）。 */
+	lastActivityAt: number;
+	/** 闲置回收计时器（到期 evict 本会话）。 */
+	timer: ReturnType<typeof setTimeout>;
+	/** 会话沙盒句柄获取（回收时 stop 用；onSession 闭包，跨回调可用）。 */
+	getSandbox: () => Promise<{ stop: () => Promise<void> }>;
 }
 
 interface SandboxIdleRegistry {
-  /** sessionId → entry（活动状态 + 回收所需）。 */
-  entries: Map<string, SandboxIdleEntry>;
-  /** sessionId → refresh 闭包（hooks/sandbox-idle.ts 活动续命调用）。 */
-  refreshes: Map<string, () => void>;
+	/** sessionId → entry（活动状态 + 回收所需）。 */
+	entries: Map<string, SandboxIdleEntry>;
+	/** sessionId → refresh 闭包（hooks/sandbox-idle.ts 活动续命调用）。 */
+	refreshes: Map<string, () => void>;
 }
 
 const g = globalThis as unknown as { __sandboxIdle?: SandboxIdleRegistry };
@@ -57,68 +61,91 @@ g.__sandboxIdle ??= { entries: new Map(), refreshes: new Map() };
 
 /** 用户 id：会话发起方认证上下文中最稳定标识（与 skills/visibility.ts 同口径）。 */
 function resolveUserId(ctx: { session: { auth?: unknown } }): string {
-  const auth = ctx.session.auth as
-    | { initiator?: { principalId?: string; subject?: string } | null }
-    | null
-    | undefined;
-  const initiator = auth?.initiator;
-  return initiator?.principalId ?? initiator?.subject ?? "*";
+	const auth = ctx.session.auth as
+		| { initiator?: { principalId?: string; subject?: string } | null }
+		| null
+		| undefined;
+	const initiator = auth?.initiator;
+	return initiator?.principalId ?? initiator?.subject ?? "*";
 }
 
 /** 主动回收一个会话的沙盒（清计时器 + stop；不破坏宿主侧对话状态）。 */
-async function evictSession(registry: SandboxIdleRegistry, sessionId: string, reason: string): Promise<void> {
-  const entry = registry.entries.get(sessionId);
-  if (!entry) return;
-  clearTimeout(entry.timer);
-  registry.entries.delete(sessionId);
-  registry.refreshes.delete(sessionId);
-  try {
-    const sandbox = await entry.getSandbox();
-    await sandbox.stop();
-    console.log(`[sandbox] 回收会话 ${sessionId.slice(0, 12)}（${reason}）`);
-  } catch (error) {
-    // 回收失败不阻塞（沙箱可能已被 eve 重开）
-    console.warn("[sandbox] 回收失败:", error instanceof Error ? error.message : String(error));
-  }
+async function evictSession(
+	registry: SandboxIdleRegistry,
+	sessionId: string,
+	reason: string,
+): Promise<void> {
+	const entry = registry.entries.get(sessionId);
+	if (!entry) return;
+	clearTimeout(entry.timer);
+	registry.entries.delete(sessionId);
+	registry.refreshes.delete(sessionId);
+	try {
+		const sandbox = await entry.getSandbox();
+		await sandbox.stop();
+		console.log(`[sandbox] 回收会话 ${sessionId.slice(0, 12)}（${reason}）`);
+	} catch (error) {
+		// 回收失败不阻塞（沙箱可能已被 eve 重开）
+		console.warn(
+			"[sandbox] 回收失败:",
+			error instanceof Error ? error.message : String(error),
+		);
+	}
 }
 
 // env 或 ~/.config/agentbay/api_key 任一存在即启用 AgentBay；eval 可显式强制 just-bash。
-const forceJustBash = process.env.EVE_SANDBOX_BACKEND?.trim().toLowerCase() === "justbash";
+const forceJustBash =
+	process.env.EVE_SANDBOX_BACKEND?.trim().toLowerCase() === "justbash";
 const maxSandboxesPerUser = forceJustBash ? 8 : MAX_SANDBOXES_PER_USER;
-const backend = forceJustBash || !resolveApiKey() ? justbash() : agentbayBackend();
+const backend =
+	forceJustBash || !resolveApiKey() ? justbash() : agentbayBackend();
 
 export default defineSandbox({
-  backend,
-  async onSession({ use, ctx }) {
-    await use();
-    const sid = ctx.session.id;
-    const userId = resolveUserId(ctx);
-    const registry = g.__sandboxIdle!;
+	backend,
+	async onSession({ use, ctx }) {
+		await use();
+		const sid = ctx.session.id;
+		const userId = resolveUserId(ctx);
+		const registry = g.__sandboxIdle!;
 
-    // 按用户配额：同用户达到当前 backend 上限时，按最后活动时间
-    // 升序回收最久未活动的会话（本会话尚未注册，腾出的名额给本会话）。
-    const userSessions = [...registry.entries.entries()]
-      .filter(([, entry]) => entry.userId === userId)
-      .map(([sessionId, entry]) => ({ sessionId, userId, lastActivityAt: entry.lastActivityAt }));
-    for (const victimSid of decideQuotaEvictions(userSessions, maxSandboxesPerUser)) {
-      void evictSession(registry, victimSid, `用户 ${userId} 配额（最多 ${maxSandboxesPerUser} 个沙盒）`);
-    }
+		// 按用户配额：同用户达到当前 backend 上限时，按最后活动时间
+		// 升序回收最久未活动的会话（本会话尚未注册，腾出的名额给本会话）。
+		const userSessions = [...registry.entries.entries()]
+			.filter(([, entry]) => entry.userId === userId)
+			.map(([sessionId, entry]) => ({
+				sessionId,
+				userId,
+				lastActivityAt: entry.lastActivityAt,
+			}));
+		for (const victimSid of decideQuotaEvictions(
+			userSessions,
+			maxSandboxesPerUser,
+		)) {
+			void evictSession(
+				registry,
+				victimSid,
+				`用户 ${userId} 配额（最多 ${maxSandboxesPerUser} 个沙盒）`,
+			);
+		}
 
-    // 活动续命：重置 lastActivityAt + 重启 10 分钟计时器（hook 每活动调用）。
-    const refresh = () => {
-      const entry = registry.entries.get(sid);
-      if (!entry) return;
-      entry.lastActivityAt = Date.now();
-      clearTimeout(entry.timer);
-      entry.timer = setTimeout(() => void evictSession(registry, sid, `闲置 ${IDLE_MS / 60_000} 分钟`), IDLE_MS);
-    };
+		// 活动续命：重置 lastActivityAt + 重启 10 分钟计时器（hook 每活动调用）。
+		const refresh = () => {
+			const entry = registry.entries.get(sid);
+			if (!entry) return;
+			entry.lastActivityAt = Date.now();
+			clearTimeout(entry.timer);
+			entry.timer = setTimeout(
+				() => void evictSession(registry, sid, `闲置 ${IDLE_MS / 60_000} 分钟`),
+				IDLE_MS,
+			);
+		};
 
-    registry.entries.set(sid, {
-      userId,
-      lastActivityAt: Date.now(),
-      timer: setTimeout(refresh, IDLE_MS),
-      getSandbox: () => ctx.getSandbox(),
-    });
-    registry.refreshes.set(sid, refresh);
-  },
+		registry.entries.set(sid, {
+			userId,
+			lastActivityAt: Date.now(),
+			timer: setTimeout(refresh, IDLE_MS),
+			getSandbox: () => ctx.getSandbox(),
+		});
+		registry.refreshes.set(sid, refresh);
+	},
 });

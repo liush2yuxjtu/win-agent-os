@@ -12,24 +12,28 @@ import { defineEval } from "eve/evals";
  * MCP_source stdio server → SQL Server 全链路。
  */
 export default defineEval({
-  async test(t) {
-    await t.send(
-      "用 qc 工具查询 QC 数据源的最新可用数据日期（不要猜，查出来告诉我日期），" +
-        "然后把日期念一遍",
-    );
+	async test(t) {
+		await t.send(
+			"用 qc 工具查询 QC 数据源的最新可用数据日期（不要猜，查出来告诉我日期），" +
+				"然后把日期念一遍",
+		);
 
-    // 必须真实调用 qc 固定查询工具（MCP 工具运行时名 = <connection>__<tool>）
-    t.calledTool("qc__fixed_query");
-    t.noFailedActions();
-    // 以工具结果锁定真实日期；模型是否在同一步复述只记软指标。
-    t.eventsSatisfy("QC 工具返回 YYYY-MM-DD", (events) =>
-      events.some((event) => {
-        if (event.type !== "action.result") return false;
-        const result = event.data.result;
-        if (result.kind !== "tool-result" || result.toolName !== "qc__fixed_query") return false;
-        return /\d{4}-\d{2}-\d{2}/.test(JSON.stringify(result.output));
-      }),
-    );
-    t.messageIncludes(/\d{4}-\d{2}-\d{2}/).soft();
-  },
+		// 必须真实调用 qc 固定查询工具（MCP 工具运行时名 = <connection>__<tool>）
+		t.calledTool("qc__fixed_query");
+		t.noFailedActions();
+		// 以工具结果锁定真实日期；模型是否在同一步复述只记软指标。
+		t.eventsSatisfy("QC 工具返回 YYYY-MM-DD", (events) =>
+			events.some((event) => {
+				if (event.type !== "action.result") return false;
+				const result = event.data.result;
+				if (
+					result.kind !== "tool-result" ||
+					result.toolName !== "qc__fixed_query"
+				)
+					return false;
+				return /\d{4}-\d{2}-\d{2}/.test(JSON.stringify(result.output));
+			}),
+		);
+		t.messageIncludes(/\d{4}-\d{2}-\d{2}/).soft();
+	},
 });
