@@ -1,3 +1,4 @@
+from semantica_mcp_server.graph_store import GraphStore
 from semantica_mcp_server.pipeline import build_snapshot
 from semantica_mcp_server.source_adapter import load_manifest, parse_source
 
@@ -14,6 +15,16 @@ def test_parse_and_build_graph(raw_dir):
     assert any(node.type == "Table" and node.metadata["table"] == "QC_TEST_PRODUCT" for node in snapshot.nodes)
     assert any(edge.type == "RELATES_TO" for edge in snapshot.edges)
     assert all(edge.source and edge.target for edge in snapshot.edges)
+    store = GraphStore(snapshot)
+    if store._semantica_graph is not None:
+        table = next(
+            node
+            for node in store._semantica_graph.find_nodes()
+            if node.get("id") == "table:video_management.dbo.QC_TEST_PRODUCT"
+        )
+        assert table["content"] == "测试品线表"
+        assert table["metadata"]["table"] == "QC_TEST_PRODUCT"
+        assert "metadata" not in table["metadata"]
 
 
 def test_checksum_failure(raw_dir):

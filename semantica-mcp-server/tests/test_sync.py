@@ -24,6 +24,24 @@ def test_dry_run_does_not_create_generation(raw_dir, tmp_path):
     assert service.status()["active_generation"] is None
 
 
+def test_missing_active_graph_forces_rebuild(raw_dir, tmp_path):
+    config = Config(raw_dir, tmp_path / "state", "127.0.0.1", 7333, None)
+    first_service = SemanticaService(config)
+    first = first_service.sync()
+    active = first_service.state.active_generation()
+    assert active is not None
+    from pathlib import Path
+
+    Path(active["graph_path"]).unlink()
+    restarted = SemanticaService(config)
+    assert restarted.status()["status"] == "stale"
+    assert restarted.status()["stale_reason"] == "active_graph_unavailable"
+    rebuilt = restarted.sync()
+    assert rebuilt["changed"] is True
+    assert rebuilt["generation"] > first["generation"]
+    assert restarted.graph.summary()["source_count"] == 2
+
+
 def test_sync_lock_is_cross_process_safe(tmp_path):
     state_dir = tmp_path / "state"
     first = StateStore(state_dir)

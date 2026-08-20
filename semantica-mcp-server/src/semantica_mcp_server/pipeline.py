@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections import defaultdict
 from typing import Iterable
 
 from .models import Edge, GraphSnapshot, Node
@@ -16,26 +17,48 @@ def _edge_id(source: str, edge_type: str, target: str) -> str:
     return f"edge:{digest}"
 
 
+def _provenance(fragment: TableFragment) -> dict[str, str]:
+    return {
+        "source_file": fragment.source_file,
+        "source_sha256": fragment.source_sha256,
+    }
+
+
 def build_snapshot(
     fragments: Iterable[TableFragment], corpus_sha256: str, semantica_version: str
 ) -> GraphSnapshot:
     fragment_list = sorted(fragments, key=lambda item: (item.database, item.schema, item.table))
     nodes: dict[str, Node] = {}
     edges: dict[str, Edge] = {}
-    table_ids: dict[str, str] = {}
+    qualified_table_ids: dict[tuple[str, str, str], str] = {}
+    unqualified_table_ids: dict[str, list[str]] = defaultdict(list)
+    database_fragments: dict[str, list[TableFragment]] = defaultdict(list)
+
+    for fragment in fragment_list:
+        database_fragments[fragment.database].append(fragment)
+        table_id = f"table:{_slug(fragment.database)}.{_slug(fragment.schema)}.{_slug(fragment.table)}"
+        qualified_table_ids[(fragment.database, fragment.schema, fragment.table.upper())] = table_id
+        unqualified_table_ids[fragment.table.upper()].append(table_id)
+
+    for database, sources in sorted(database_fragments.items()):
+        database_id = f"database:{_slug(database)}"
+        first = sources[0]
+        nodes[database_id] = Node(
+            database_id,
+            database,
+            "Database",
+            {
+                **_provenance(first),
+                "database": database,
+                "source_files": [fragment.source_file for fragment in sources],
+                "source_sha256s": [fragment.source_sha256 for fragment in sources],
+            },
+        )
 
     for fragment in fragment_list:
         database_id = f"database:{_slug(fragment.database)}"
-        table_id = f"table:{_slug(fragment.database)}.{_slug(fragment.schema)}.{_slug(fragment.table)}"
-        table_ids[fragment.table.upper()] = table_id
-        provenance = {
-            "source_path": fragment.source_file,
-            "source_sha256": fragment.source_sha256,
-        }
-        nodes.setdefault(
-            database_id,
-            Node(database_id, fragment.database, "Database", {"database": fragment.database}),
-        )
+        table_id = qualified_table_ids[(fragment.database, fragment.schema, fragment.table.upper())]
+        provenance = _provenance(fragment)
         nodes[table_id] = Node(
             table_id,
             fragment.chinese_name or fragment.table,
@@ -99,9 +122,9 @@ def build_snapshot(
                     provenance,
                 )
                 edges[edge.id] = edge
-        for index, issue in enumerate(fragment.known_issues):
-            issue_digest = hashlib.sha256(issue.encode("utf-8")).hexdigest()[:16]
-            issue_id = f"issue:{table_id.removeprefix('table:')}:{index}:{issue_digest}"
+        for issue in fragment.known_issues:
+            issue_digest = hashlib.sha256(issue.encode("utf-8")).hexdigest()[:20]
+            issue_id = f"issue:{table_id.removeprefix('table:')}:{issue_digest}"
             nodes[issue_id] = Node(
                 issue_id,
                 issue[:120],
@@ -118,13 +141,14 @@ def build_snapshot(
             edges[edge.id] = edge
 
     for fragment in fragment_list:
-        source_id = table_ids.get(fragment.table.upper())
-        if source_id is None:
-            continue
-        provenance = {"source_path": fragment.source_file, "source_sha256": fragment.source_sha256}
+        source_id = qualified_table_ids[(fragment.database, fragment.schema, fragment.table.upper())]
+        provenance = _provenance(fragment)
         for relation in fragment.relations:
-            target_name = relation.get("target", "")
-            target_id = table_ids.get(target_name.upper())
+            target_name = relation.get("target", "").upper()
+            target_id = qualified_table_ids.get((fragment.database, fragment.schema, target_name))
+            if target_id is None:
+                candidates = unqualified_table_ids.get(target_name, [])
+                target_id = candidates[0] if len(candidates) == 1 else None
             if target_id is None:
                 continue
             edge = Edge(
@@ -154,8 +178,11 @@ def validate_snapshot(snapshot: GraphSnapshot) -> None:
     node_ids = {node.id for node in snapshot.nodes}
     if len(node_ids) != len(snapshot.nodes):
         raise ValueError("候选图存在重复节点 ID")
+    for node in snapshot.nodes:
+        if "source_file" not in node.metadata or "source_sha256" not in node.metadata:
+            raise ValueError(f"节点缺少 provenance: {node.id}")
     for edge in snapshot.edges:
         if edge.source not in node_ids or edge.target not in node_ids:
             raise ValueError(f"候选图存在悬空关系: {edge.id}")
-        if "source_path" not in edge.metadata and edge.type != "CONTAINS_TABLE":
+        if "source_file" not in edge.metadata or "source_sha256" not in edge.metadata:
             raise ValueError(f"关系缺少 provenance: {edge.id}")

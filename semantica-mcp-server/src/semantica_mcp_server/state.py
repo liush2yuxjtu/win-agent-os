@@ -110,7 +110,10 @@ class StateStore:
         path = Path(generation["graph_path"])
         if not path.is_file() or path.parent.resolve() != self.graph_dir.resolve():
             return None
-        return GraphSnapshot.from_dict(json.loads(path.read_text("utf-8")))
+        try:
+            return GraphSnapshot.from_dict(json.loads(path.read_text("utf-8")))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+            return None
 
     def commit_generation(
         self,

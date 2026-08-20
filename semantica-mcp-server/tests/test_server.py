@@ -32,6 +32,29 @@ def test_protocol_and_tools(raw_dir, tmp_path):
     assert search["structuredContent"]["count"] > 0
 
 
+def test_protocol_negotiation_and_notifications(raw_dir, tmp_path):
+    config = Config(raw_dir, tmp_path / "state", "127.0.0.1", 7333, None)
+    client = TestClient(create_app(config, SemanticaService(config)))
+    initialize = _rpc(client, "initialize", {"protocolVersion": "not-a-real-version"})
+    assert initialize.json()["result"]["protocolVersion"] == "2025-06-18"
+    notification = client.post(
+        "/mcp",
+        json={"jsonrpc": "2.0", "method": "notifications/cancelled", "params": {}},
+    )
+    assert notification.status_code == 202
+    assert notification.content == b""
+
+
+def test_origin_and_content_type_are_restricted(raw_dir, tmp_path):
+    config = Config(raw_dir, tmp_path / "state", "127.0.0.1", 7333, None)
+    client = TestClient(create_app(config, SemanticaService(config)))
+    payload = {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}
+    hostile = client.post("/mcp", json=payload, headers={"Origin": "https://evil.example"})
+    assert hostile.status_code == 403
+    text_plain = client.post("/mcp", content='{}', headers={"Content-Type": "text/plain"})
+    assert text_plain.status_code == 415
+
+
 def test_bearer_token(raw_dir, tmp_path):
     config = Config(raw_dir, tmp_path / "state", "127.0.0.1", 7333, "secret")
     client = TestClient(create_app(config, SemanticaService(config)))

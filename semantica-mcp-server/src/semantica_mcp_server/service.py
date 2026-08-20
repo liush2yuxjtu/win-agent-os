@@ -32,13 +32,18 @@ class SemanticaService:
                 return {"status": "sync_in_progress", "changed": False}
             entries, corpus_sha = load_manifest(self.config.raw_files_dir)
             active = self.state.active_generation()
+            active_snapshot = self.state.load_active_snapshot() if active is not None else None
             if (
                 not force
                 and active is not None
+                and active_snapshot is not None
                 and active["corpus_sha256"] == corpus_sha
                 and active["parser_version"] == PARSER_VERSION
                 and active["semantica_version"] == self.semantica_version
             ):
+                if self.graph.snapshot is None:
+                    with self._graph_lock:
+                        self.graph.replace(active_snapshot)
                 return {
                     "status": "ready",
                     "changed": False,
@@ -127,10 +132,16 @@ class SemanticaService:
                 "semantica_version": self.semantica_version,
                 "parser_version": PARSER_VERSION,
             }
-        stale = current_sha is None or current_sha != active["corpus_sha256"]
+        active_snapshot = self.state.load_active_snapshot()
+        stale = (
+            active_snapshot is None
+            or current_sha is None
+            or current_sha != active["corpus_sha256"]
+        )
         return {
             "status": "stale" if stale else "ready",
             "stale": stale,
+            "stale_reason": "active_graph_unavailable" if active_snapshot is None else None,
             "active_generation": int(active["id"]),
             "source_count": int(active["source_count"]),
             "node_count": int(active["node_count"]),

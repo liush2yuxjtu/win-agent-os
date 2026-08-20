@@ -6,6 +6,7 @@ import logging
 import time
 from collections import defaultdict, deque
 from typing import Any
+from urllib.parse import urlsplit
 
 from starlette.applications import Starlette
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -20,6 +21,8 @@ from .tools import TOOL_DEFINITIONS, call_tool
 
 log = logging.getLogger("semantica_mcp_server")
 MAX_REQUEST_BYTES = 1_000_000
+SUPPORTED_PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
+LOOPBACK_ORIGIN_HOSTS = {"127.0.0.1", "localhost", "::1"}
 
 
 class SecurityMiddleware(BaseHTTPMiddleware):
@@ -29,6 +32,10 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         self.requests: dict[str, deque[float]] = defaultdict(deque)
 
     async def dispatch(self, request: Request, call_next: Any) -> Response:
+        if request.url.path == "/mcp":
+            origin = request.headers.get("origin")
+            if origin and urlsplit(origin).hostname not in LOOPBACK_ORIGIN_HOSTS:
+                return JSONResponse({"error": "origin_not_allowed"}, status_code=403)
         if request.url.path != "/healthz" and self.config.token:
             provided = request.headers.get("authorization", "")
             expected = f"Bearer {self.config.token}"
@@ -67,6 +74,9 @@ def create_app(config: Config | None = None, service: SemanticaService | None = 
         return JSONResponse({"service": "semantica-mcp-server", **status}, status_code=code)
 
     async def mcp_post(request: Request) -> Response:
+        content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+        if content_type != "application/json":
+            return JSONResponse(_error(None, -32600, "Content-Type must be application/json"), status_code=415)
         content_length = request.headers.get("content-length")
         if content_length:
             try:
@@ -86,15 +96,16 @@ def create_app(config: Config | None = None, service: SemanticaService | None = 
         request_id = payload.get("id")
         method = payload.get("method")
         params = payload.get("params") or {}
-        if method == "notifications/initialized":
+        if request_id is None:
             return Response(status_code=202)
         if method == "initialize":
-            requested = params.get("protocolVersion", "2024-11-05") if isinstance(params, dict) else "2024-11-05"
+            requested = params.get("protocolVersion") if isinstance(params, dict) else None
+            negotiated = requested if requested in SUPPORTED_PROTOCOL_VERSIONS else SUPPORTED_PROTOCOL_VERSIONS[0]
             return JSONResponse(
                 _ok(
                     request_id,
                     {
-                        "protocolVersion": requested,
+                        "protocolVersion": negotiated,
                         "capabilities": {"tools": {"listChanged": False}, "resources": {"subscribe": False, "listChanged": False}},
                         "serverInfo": {"name": "semantica-mcp-server", "version": __version__},
                     },

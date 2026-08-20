@@ -6,8 +6,21 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-PARSER_VERSION = "qc-markdown-v1"
-_SECTION_RE = re.compile(r"^##\s+\d+\.\s+(.+)$")
+PARSER_VERSION = "qc-markdown-v2"
+_SECTION_RE = re.compile(r"^##\s+(\d+)\.\s+(.+)$")
+_EXPECTED_SECTIONS = list(range(1, 11))
+_EXPECTED_SECTION_PREFIXES = [
+    "表元数据",
+    "Schema",
+    "样例数据",
+    "数据画像",
+    "表关系",
+    "数据血缘",
+    "字段定义",
+    "枚举字典",
+    "已知问题",
+    "常见用法",
+]
 
 
 @dataclass(frozen=True)
@@ -75,6 +88,7 @@ def load_manifest(raw_dir: Path) -> tuple[list[SourceEntry], str]:
     root = raw_dir.resolve()
     checksum_path = root / "SHA256SUMS"
     entries: list[SourceEntry] = []
+    listed_names: set[str] = set()
     for line_number, raw_line in enumerate(checksum_path.read_text("utf-8").splitlines(), 1):
         line = raw_line.strip()
         if not line:
@@ -85,29 +99,47 @@ def load_manifest(raw_dir: Path) -> tuple[list[SourceEntry], str]:
         name = parts[1].lstrip("*").strip()
         if Path(name).name != name or not name.endswith(".md"):
             raise ValueError("SHA256SUMS 只能包含 raw_files 根目录下的 Markdown")
+        if name in listed_names:
+            raise ValueError(f"SHA256SUMS 包含重复文件: {name}")
+        listed_names.add(name)
         path = root / name
         if not _contained(root, path) or not path.is_file() or path.is_symlink():
             raise ValueError(f"清单文件缺失或路径非法: {name}")
+        # DB.md 仅验证清单路径存在；绝不打开、hash 或摄取其敏感内容。
+        if name == "DB.md":
+            continue
         actual = hashlib.sha256(path.read_bytes()).hexdigest()
         expected = parts[0].lower()
         if actual != expected:
             raise ValueError(f"文件完整性校验失败: {name}")
-        # DB.md 是本地连接说明/凭据容器，不属于数据字典，绝不摄取。
-        if name == "DB.md":
-            continue
         entries.append(SourceEntry(name=name, sha256=expected, path=path))
+
+    actual_names = {
+        path.name
+        for path in root.iterdir()
+        if path.is_file() and not path.is_symlink() and path.suffix == ".md" and path.name != "DB.md"
+    }
+    allowlisted_names = listed_names - {"DB.md"}
+    unlisted = sorted(actual_names - allowlisted_names)
+    if unlisted:
+        raise ValueError(f"存在未列入 SHA256SUMS 的 Markdown: {unlisted[0]}")
+    missing = sorted(allowlisted_names - actual_names)
+    if missing:
+        raise ValueError(f"SHA256SUMS 中的 Markdown 缺失: {missing[0]}")
+
     entries.sort(key=lambda item: item.name)
     if not entries:
         raise ValueError("SHA256SUMS 未列出可摄取的 Markdown")
     digest = hashlib.sha256()
+    digest.update(f"parser={PARSER_VERSION}\n".encode("utf-8"))
     for entry in entries:
         digest.update(f"{entry.sha256}  {entry.name}\n".encode("utf-8"))
     return entries, digest.hexdigest()
 
 
 def _split_row(line: str) -> list[str]:
-    cells = [cell.strip().strip("`") for cell in line.strip().strip("|").split("|")]
-    return cells
+    cells = re.split(r"(?<!\\)\|", line.strip().strip("|"))
+    return [cell.replace(r"\|", "|").strip().strip("`") for cell in cells]
 
 
 def _table_rows(lines: list[str]) -> list[list[str]]:
@@ -127,14 +159,24 @@ def _table_rows(lines: list[str]) -> list[list[str]]:
 
 def _sections(lines: list[str]) -> dict[str, list[str]]:
     sections: dict[str, list[str]] = {}
+    section_numbers: list[int] = []
     current: str | None = None
     for line in lines:
         match = _SECTION_RE.match(line)
         if match:
-            current = match.group(1).strip()
+            number = int(match.group(1))
+            current = match.group(2).strip()
+            section_numbers.append(number)
+            if current in sections:
+                raise ValueError("固定十段 Markdown 包含重复段落")
             sections[current] = []
         elif current is not None:
             sections[current].append(line)
+    if section_numbers != _EXPECTED_SECTIONS:
+        raise ValueError("固定十段 Markdown 必须严格按 1-10 排列")
+    headings = list(sections)
+    if any(not heading.startswith(prefix) for heading, prefix in zip(headings, _EXPECTED_SECTION_PREFIXES)):
+        raise ValueError("固定十段 Markdown 标题不符合 adapter 契约")
     return sections
 
 
@@ -145,23 +187,25 @@ def _section(sections: dict[str, list[str]], prefix: str) -> list[str]:
     return []
 
 
-def parse_source(entry: SourceEntry) -> TableFragment | None:
+def parse_source(entry: SourceEntry) -> TableFragment:
     text = entry.path.read_text("utf-8")
     lines = text.splitlines()
     if not lines or not lines[0].startswith("# "):
-        return None
+        raise ValueError(f"字典标题非法: {entry.name}")
     title = lines[0][2:].strip()
     title_parts = [part.strip() for part in title.split("·", 1)]
     table = title_parts[0]
-    if table == "DB":
-        return None
+    if not table or table == "DB":
+        raise ValueError(f"字典表名非法: {entry.name}")
     chinese_name = title_parts[1] if len(title_parts) > 1 else ""
     db_match = re.search(
         r"\*\*数据库 \(Database\):\*\*\s*`([^`]+)`\s*·\s*\*\*Schema:\*\*\s*`([^`]+)`",
         text,
     )
-    database = db_match.group(1) if db_match else "video_management"
-    schema = db_match.group(2) if db_match else "dbo"
+    if db_match is None:
+        raise ValueError(f"字典缺少 Database/Schema: {entry.name}")
+    database = db_match.group(1)
+    schema = db_match.group(2)
     section_map = _sections(lines)
 
     metadata: dict[str, str] = {}
