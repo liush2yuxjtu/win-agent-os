@@ -1,0 +1,56 @@
+node_modules
+.env*
+.eve
+.vercel
+.next
+.output
+.nitro
+dist
+.DS_Store
+*.tsbuildinfo
+
+# ---- qc-mcp-server: 生产凭据与内部业务数据（禁止入库）----
+qc-mcp-server/raw_files/DB.md
+qc-mcp-server/evals/
+qc-mcp-server/eval_db/*.db
+ai-control-workspace/
+!.env.example
+qc-mcp-server/eval_db/
+
+# 技能注册表本地 SQLite（不入库，registry.json 快照已覆盖运行时读取）
+surfaces/web/data/skill-registry.db
+
+
+# 机器人绑定库（凭据敏感，不入库）
+surfaces/web/data/bot-bindings.db
+surfaces/web/lib/bot-bindings/.wechat-*/
+
+
+# worktree 目录（不入库）
+.claude/worktrees/
+
+.devtools
+.pi/
+
+# dashboard 迭代工作区（不入库）
+edit-dashboard-workspace/
+
+# 本地运行时数据（web surface）
+surfaces/web/data/chat-sessions.db
+surfaces/web/data/reports.db
+surfaces/web/data/skill-evals.db
+
+# WinBrain 原型部署产物（Playwright 截图等，非运行依赖）
+surfaces/web/public/winbrain/output
+.eve-extension-build-*/
+
+# Python 编译缓存(aro backend)
+__pycache__/
+.venv/
+
+# 可见性矩阵本地库(运行时数据)
+surfaces/web/data/visibility.db
+
+# extension 组合生成目录（由 npm run extensions:sync 按 profile 生成，不 commit）
+# 全量挂载文件在 agent/extensions-available/，profile 声明在 profiles/*.json
+agent/extensions/

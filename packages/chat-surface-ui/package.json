@@ -1,0 +1,37 @@
+{
+  "name": "@chat-surface-ui/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "ai": "^7.0.58",
+    "eve": "^0.38.3",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "dependencies": {
+    "@radix-ui/react-use-controllable-state": "1.2.2",
+    "@streamdown/cjk": "1.0.3",
+    "@streamdown/code": "1.1.1",
+    "@streamdown/math": "1.0.2",
+    "@streamdown/mermaid": "1.0.2",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "cmdk": "1.1.1",
+    "lucide-react": "1.16.0",
+    "motion": "12.40.0",
+    "nanoid": "5.1.11",
+    "radix-ui": "1.4.3",
+    "shiki": "4.1.0",
+    "streamdown": "2.5.0",
+    "tailwind-merge": "3.6.0",
+    "use-stick-to-bottom": "1.1.4"
+  }
+}

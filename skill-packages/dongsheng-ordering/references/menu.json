@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "location": "东升科技园园区食堂",
+    "version": "2025-08-17",
+    "currency": "CNY",
+    "source": "示例测试数据（AI 生成，非真实商家菜单；仅用于技能流程演示）"
+  },
+  "canteen": "东升科技园园区食堂",
+  "categories": ["主食", "小炒", "汤品", "轻食", "饮品"],
+  "items": [
+    {
+      "id": "M001",
+      "name": "招牌黄焖鸡米饭",
+      "category": "主食",
+      "price": 22.0,
+      "description": "鸡肉鲜嫩，土豆软糯，配一碗米饭，微辣下饭",
+      "spicy": "微辣",
+      "tags": ["热销", "套餐"],
+      "available": true
+    },
+    {
+      "id": "M002",
+      "name": "宫保鸡丁盖饭",
+      "category": "主食",
+      "price": 20.0,
+      "description": "经典川味，花生脆、鸡丁嫩，甜辣口",
+      "spicy": "中辣",
+      "tags": ["盖饭"],
+      "available": true
+    },
+    {
+      "id": "M003",
+      "name": "红烧牛肉面",
+      "category": "主食",
+      "price": 25.0,
+      "description": "大块牛肉炖得酥烂，汤头浓郁，面劲道",
+      "spicy": "不辣",
+      "tags": ["热销", "面食"],
+      "available": true
+    },
+    {
+      "id": "M004",
+      "name": "西红柿鸡蛋面",
+      "category": "主食",
+      "price": 16.0,
+      "description": "酸甜开胃，分量足，清淡首选",
+      "spicy": "不辣",
+      "tags": ["面食", "清淡"],
+      "available": true
+    },
+    {
+      "id": "M005",
+      "name": "蛋炒饭",
+      "category": "主食",
+      "price": 12.0,
+      "description": "粒粒分明，加葱花和火腿丁，性价比之王",
+      "spicy": "不辣",
+      "tags": ["平价"],
+      "available": true
+    },
+    {
+      "id": "M006",
+      "name": "鱼香肉丝",
+      "category": "小炒",
+      "price": 18.0,
+      "description": "咸甜酸辣兼备，配饭绝佳，可单点或拼饭",
+      "spicy": "微辣",
+      "tags": ["下饭"],
+      "available": true
+    },
+    {
+      "id": "M007",
+      "name": "尖椒炒肉",
+      "category": "小炒",
+      "price": 21.0,
+      "description": "青尖椒配五花肉，锅气足，喜辣必点",
+      "spicy": "中辣",
+      "tags": ["下饭"],
+      "available": true
+    },
+    {
+      "id": "M008",
+      "name": "蒜蓉西兰花",
+      "category": "小炒",
+      "price": 14.0,
+      "description": "清爽解腻，补充膳食纤维",
+      "spicy": "不辣",
+      "tags": ["素菜", "清淡"],
+      "available": true
+    },
+    {
+      "id": "M009",
+      "name": "口水鸡",
+      "category": "小炒",
+      "price": 18.0,
+      "description": "红油鸡块，麻辣鲜香，凉菜热卖",
+      "spicy": "中辣",
+      "tags": ["凉菜"],
+      "available": true
+    },
+    {
+      "id": "M010",
+      "name": "紫菜蛋花汤",
+      "category": "汤品",
+      "price": 6.0,
+      "description": "清淡暖胃，配主食刚好",
+      "spicy": "不辣",
+      "tags": ["清淡"],
+      "available": true
+    },
+    {
+      "id": "M011",
+      "name": "番茄牛腩汤",
+      "category": "汤品",
+      "price": 12.0,
+      "description": "番茄酸甜，牛腩软烂，汤鲜味浓",
+      "spicy": "不辣",
+      "tags": ["热销"],
+      "available": true
+    },
+    {
+      "id": "M012",
+      "name": "鸡肉蔬菜沙拉",
+      "category": "轻食",
+      "price": 19.0,
+      "description": "鸡胸肉+生菜+圣女果+玉米粒，低卡高蛋白",
+      "spicy": "不辣",
+      "tags": ["轻食", "减脂"],
+      "available": true
+    },
+    {
+      "id": "M013",
+      "name": "凯撒鸡肉卷",
+      "category": "轻食",
+      "price": 17.0,
+      "description": "饼皮卷鸡肉、生菜、芝士，方便边走边吃",
+      "spicy": "不辣",
+      "tags": ["便携"],
+      "available": true
+    },
+    {
+      "id": "M014",
+      "name": "酸梅汤",
+      "category": "饮品",
+      "price": 6.0,
+      "description": "冰镇解腻，夏天必点",
+      "spicy": "不辣",
+      "tags": ["冰饮"],
+      "available": true
+    },
+    {
+      "id": "M015",
+      "name": "可乐",
+      "category": "饮品",
+      "price": 5.0,
+      "description": "冰镇罐装",
+      "spicy": "不辣",
+      "tags": ["冰饮"],
+      "available": true
+    },
+    {
+      "id": "M016",
+      "name": "柠檬水",
+      "category": "饮品",
+      "price": 4.0,
+      "description": "现泡柠檬片，清爽微酸",
+      "spicy": "不辣",
+      "tags": ["清淡"],
+      "available": true
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-18T10:02:02.252Z",
+  "skills": [
+    {
+      "name": "ai-control",
+      "folder": "skill-packages/ai-control",
+      "kind": "packaged",
+      "description": "千川账号追投操作诊断助手。当用户需要**追投问题诊断与操作建议**时触发：追投ROI偏低是否停、预算跑空是否加、误下架素材是否恢复、追投计划健康度、该追投没追投/不该追投却追投、在投素材够不够、日消耗提升空间、健康度评分、或要求出**含操作建议**的追投分析报告。**不触发**：仅要追投消耗占比/排名统计、仅要追投候选清单、仅要直接执行操作（直接停/直接加预算）、仅要九维度评分不要建议、仅问日消耗下降原因。只读QC数据，输出暖色调HTML报告或对话总结。",
+      "files": [
+        "ai-control/SKILL.md",
+        "ai-control/evals/evals.json",
+        "ai-control/evals/feedback.json",
+        "ai-control/evals/trigger-evals.json",
+        "ai-control/references/business-logic.md",
+        "ai-control/references/experts-prompt.md",
+        "ai-control/references/prod-id.md"
+      ],
+      "mtime": "2026-08-18T10:02:02.247Z",
+      "enabled": true
+    },
+    {
+      "name": "ai-sdk",
+      "folder": "skill-packages/ai-sdk",
+      "kind": "packaged",
+      "description": "Answer questions about the AI SDK and help build AI-powered features. Use when developers: (1) Ask about AI SDK functions like generateText, streamText, ToolLoopAgent, embed, or tools, (2) Want to build AI agents, chatbots, RAG systems, or text generation features, (3) Have questions about AI providers (OpenAI, Anthropic, Google, etc.), streaming, tool calling, structured output, or embeddings, (4) Use React hooks like useChat or useCompletion. Triggers on: \"AI SDK\", \"Vercel AI SDK\", \"generateText\", \"streamText\", \"add AI to my app\", \"build an agent\", \"tool calling\", \"structured output\", \"useChat\".",
+      "files": [
+        "ai-sdk/SKILL.md",
+        "ai-sdk/references/ai-gateway.md",
+        "ai-sdk/references/common-errors.md",
+        "ai-sdk/references/devtools.md",
+        "ai-sdk/references/type-safe-agents.md"
+      ],
+      "mtime": "2026-08-18T04:19:16.050Z",
+      "enabled": false
+    },
+    {
+      "name": "authoring-skills",
+      "folder": "skill-packages/authoring-skills",
+      "kind": "packaged",
+      "description": "How to create and maintain agent skills in .agents/skills/. Use when creating a new SKILL.md, writing skill descriptions, choosing frontmatter fields, or deciding what content belongs in a skill vs AGENTS.md. Covers the supported spec fields, description writing, naming conventions, and the relationship between always-loaded AGENTS.md and on-demand skills.\n",
+      "metadata": {
+        "internal": "true"
+      },
+      "files": [
+        "authoring-skills/SKILL.md"
+      ],
+      "mtime": "2026-08-17T04:16:05.195Z",
+      "enabled": true
+    },
+    {
+      "name": "dongsheng-meal",
+      "folder": "skill-packages/dongsheng-meal",
+      "kind": "packaged",
+      "description": "东升科技园点餐与菜品推荐。用户问”今天吃什么/吃啥/点什么/推荐个菜/园区食堂/午饭晚饭吃什么/帮我点餐/菜单里有什么/有没有不辣的/想吃辣的/预算XX以内吃什么”时都应触发，即使没提 skill 名。读取内置示例菜单 assets/menu.json，按口味偏好、忌口与预算过滤，结合轮换避免重复推荐，输出推荐菜 + 理由列表。纯本地数据与规则，不查 QC 数据库。",
+      "suggest": "推荐东升科技园今天吃什么",
+      "files": [
+        "dongsheng-meal/SKILL.md"
+      ],
+      "mtime": "2026-08-17T08:57:26.002Z",
+      "enabled": false
+    },
+    {
+      "name": "dongsheng-ordering",
+      "folder": "skill-packages/dongsheng-ordering",
+      "kind": "packaged",
+      "description": "东升科技园点菜助手（演示技能，全部使用假数据）。需要点餐/吃饭/推荐菜品时使用，包括显性请求（「点菜/点餐」「看菜单」「有什么好吃的」「推荐菜/今日特色」「来份工作餐/来碗面」「帮我加个菜/退个菜」「结账/算一下多少钱」「按预算/口味选菜」）和隐性场景： 用户说「饿了/好饿」「午饭/晚饭没吃」「中午12点/到饭点了还在工作/赶需求/开会没空吃」「中午吃什么好/帮我看看吃什么」「想吃饭了/该吃饭了」等表达用餐需求或饿了、卡在饭点仍忙于工作、纠结吃什么的场景时，都应触发本技能推荐东升园区餐食。 内置东升科技园 A/B/C 三座食堂的模拟菜单（假数据），覆盖工作餐、面食、轻食、饮品、甜品等品类，可做口味/预算/荤素筛选与多人拼单结算，并推断当前饭点（11:00-14:00 主推午/晚餐）。 不要用于：真实点餐系统、支付、真实库存或价格查询、预约会议室/会议安排等非用餐日程（本技能所有菜品、价格、库存均为演示假数据，不连数据库）。\n",
+      "files": [
+        "dongsheng-ordering/SKILL.md",
+        "dongsheng-ordering/evals/evals.json",
+        "dongsheng-ordering/evals/trigger-evals.json",
+        "dongsheng-ordering/references/menu.json"
+      ],
+      "mtime": "2026-08-18T08:38:09.364Z",
+      "enabled": false
+    },
+    {
+      "name": "edit-dashboard",
+      "folder": "skill-packages/edit-dashboard",
+      "kind": "packaged",
+      "description": "编辑经营看板的布局与视觉（用户通过聊天对看板做增删查改）。用户表达改看板相关意图时都应触发，即使没说 skill 名：「改一下看板/首页布局」「重新排版/排一下卡片」「卡片换一行三个/两个一行」「加一张卡/删掉某个指标卡」「换主题色/深色一点」「看板太挤了帮我调整」「把这个布局存下来一直用」「我把看板改坏了，帮我恢复基础款」；以及问「能不能直接在聊天里改看板」。流程：先 dashboard_read 读当前看板 → 用 dashboard_create / dashboard_edit / dashboard_remove 做增量增删改（或直接生成整体 spec）→ 卡片值用 ${/kpis/N/...} 模板或 dataRef 引用查询数据，绝不写死数值 → 调用 render_ui 工具，客户在看板横幅点【确定】后生效，纯前端热更新无需重启。不要用于：单纯的数据问答（近7日成交多少）、生成表单/清单/按钮等非看板界面（那些直接 render_ui，不用本技能）。",
+      "files": [
+        "edit-dashboard/SKILL.md"
+      ],
+      "mtime": "2026-08-18T03:28:11.346Z",
+      "enabled": true
+    },
+    {
+      "name": "skill-creator",
+      "folder": "skill-packages/skill-creator",
+      "kind": "packaged",
+      "description": "Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy. 中文触发：用户说「帮我提升/进化/优化 XX 技能」「让 XX 技能更好用」「这个技能触发不准/功能不达标，帮我改进」「对 XX 技能做评估并改进」时都应触发，即使没说 skill 名 —— 加载本技能后对指定技能走完整提升闭环（评估→评审→改进→重跑对比）。不要用于：单纯的数据问答、看板布局修改（走各自技能），或只要求看评估结果不改进（直接 run_skill_evals 即可）。",
+      "files": [
+        "skill-creator/LICENSE.txt",
+        "skill-creator/SKILL.md",
+        "skill-creator/agents/analyzer.md",
+        "skill-creator/agents/comparator.md",
+        "skill-creator/agents/grader.md",
+        "skill-creator/assets/eval_review.html",
+        "skill-creator/eval-viewer/generate_review.py",
+        "skill-creator/eval-viewer/viewer.html",
+        "skill-creator/references/schemas.md",
+        "skill-creator/scripts/__init__.py",
+        "skill-creator/scripts/aggregate_benchmark.py",
+        "skill-creator/scripts/generate_report.py",
+        "skill-creator/scripts/improve_description.py",
+        "skill-creator/scripts/package_skill.py",
+        "skill-creator/scripts/quick_validate.py",
+        "skill-creator/scripts/run_eval.py",
+        "skill-creator/scripts/run_loop.py",
+        "skill-creator/scripts/utils.py",
+        "skill-creator/video-additional-delivery-candidate.skill"
+      ],
+      "mtime": "2026-08-18T05:18:56.262Z",
+      "enabled": true
+    },
+    {
+      "name": "video-additional-delivery-candidate",
+      "folder": "skill-packages/video-additional-delivery-candidate",
+      "kind": "packaged",
+      "description": "视频追投候选、追投异常与追投效果诊断。用户问”哪些素材该追投/达到门槛””追投候选/名单/盘点””正常追投/违规追投/漏追投/错误追投””基础消耗与追投消耗””追投消耗占比/排名””推直播与推商品追投差异””追投 ROI/成交/订单/1 小时净成交口径”时都应触发，即使没有说 skill 名。只读查询生产 SQL Server：先动态发现最新已回填日期和有效周窗口，再按 CONTROL_TYPE 统计真实状态、列异常素材、拆基础与追投消耗、比较 GLOBAL_TYPE 与 1h assist 指标，并按品线动态门槛盘点候选；绝不硬编码历史日期、执行投放或写库。",
+      "suggest": "盘点达到追投门槛的素材候选",
+      "files": [
+        "video-additional-delivery-candidate/SKILL.md",
+        "video-additional-delivery-candidate/evals/evals.json",
+        "video-additional-delivery-candidate/references/tables.md",
+        "video-additional-delivery-candidate/scripts/candidate-diagnosis.ts",
+        "video-additional-delivery-candidate/scripts/status-analysis.ts"
+      ],
+      "mtime": "2026-08-17T05:09:50.527Z",
+      "enabled": false
+    }
+  ],
+  "audit": {
+    "status": "passed",
+    "checks": [
+      {
+        "label": "技能目录扫描",
+        "passed": true,
+        "detail": "8 个技能已发现"
+      },
+      {
+        "label": "frontmatter 完整性",
+        "passed": true,
+        "detail": "全部技能 frontmatter 合法"
+      },
+      {
+        "label": "包内文件完整",
+        "passed": true,
+        "detail": "所有技能至少包含一个文件"
+      }
+    ],
+    "warnings": []
+  }
+}

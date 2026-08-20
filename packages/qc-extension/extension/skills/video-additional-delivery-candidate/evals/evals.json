@@ -1,0 +1,147 @@
+{
+  "skill_name": "video-additional-delivery-candidate",
+  "skill_path": "/Users/liushiyuwin/video-managmenet-chat/skills/video-additional-delivery-candidate",
+  "evals": [
+    {
+      "id": 0,
+      "name": "brand-candidates-haoqiz",
+      "prompt": "帮我看看好奇品牌（brand 1）最近一个完整周窗口有哪些唯一素材达到追投门槛，输出候选清单和数据就绪诊断。窗口首尾都计入天数，重复有效品线标签不能把同一素材重复列出来。",
+      "expected_output": "READY/BLOCKED + 动态最新完整周窗口 + 按包含首尾日计算门槛 + 唯一候选清单（品线/素材ID/ROI/消耗/基线）+ 覆盖率。2026-07-20~07-26 快照按 7 天门槛为 78 个唯一候选，不是旧口径的 93 行。",
+      "files": [],
+      "expectations": [
+        "动态发现最新完整周窗口并排除 2999 open 记录",
+        "07-20~07-26 按包含首尾日计算为 7 天",
+        "候选按 DATA_ID+PROD_ID+窗口去重，不重复列同一品线素材",
+        "每条候选满足 ROI>=品线基线、COST>=日消耗基线×7、COST>0",
+        "报告窗口样本量、COST>0 覆盖和台账关联率",
+        "明确候选是人工复核依据，不执行追投或写库"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "product-candidates-t5",
+      "prompt": "T5桃桃品线有哪些唯一素材 ROI 和周消耗都达标可以追投？最近一个完整周窗口首尾日期都要算，给候选名单和阈值来源。",
+      "expected_output": "只含 T5桃桃(prod 1)；ROI基线5、日消耗基线100、完整7天门槛700；当前完整窗口共4个唯一候选。",
+      "files": [],
+      "expectations": [
+        "只返回 T5桃桃(prod 1) 候选",
+        "明确 ROI 基线=5、日消耗基线=100、7天消耗门槛=700",
+        "候选按素材去重且每条达到两个门槛",
+        "报告动态窗口和数据就绪诊断",
+        "明确只读和人工确认"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "brand-candidates-kotex",
+      "prompt": "高洁丝品牌（brand 3）的追投候选盘点一下。用最新完整周窗口、品线动态阈值和唯一素材口径。",
+      "expected_output": "brand 3 候选清单与诊断，不含好奇品牌数据；排除 open 窗口并去重。",
+      "files": [],
+      "expectations": [
+        "限定高洁丝 brand 3，不混入 brand 1",
+        "使用最新完整周窗口并排除 2999 open 记录",
+        "使用各品线动态 ROI/日消耗基线",
+        "候选按 DATA_ID+PROD_ID+窗口去重",
+        "输出数据就绪诊断、只读和人工复核声明"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "readiness-diagnosis-dynamic",
+      "prompt": "追投候选和正式追投状态的数据现在分别覆盖到哪天？请现场查数据库，不要复述文档里的历史日期；给最近7天 CONTROL_TYPE 回填量、最新完整周窗口、样本量和覆盖率。",
+      "expected_output": "动态查询事实截止日。2026-08-17运行时外部表最新有效日期为2026-08-15且08-09~08-15连续有回填；候选周窗口仍为2026-07-20~07-26。不得沿用旧的08-08/08-09全空说法。",
+      "files": [],
+      "expectations": [
+        "通过 MAX(STAT_TIME) WHERE CONTROL_TYPE IS NOT NULL 动态发现正式状态截止日",
+        "报告最近7天每日总量与 CONTROL_TYPE 非空量",
+        "动态发现并报告最新完整周窗口",
+        "不把旧 annotation 或 benchmark 的 2026-08-08 当作当前事实",
+        "区分正式状态日粒度与候选周窗口两个截止日"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "status-distribution-live",
+      "prompt": "给我一份最新有效日的追投四态盘点：正常追投、违规追投、漏追投、未追投分别有多少素材行，基础消耗和追投消耗各多少。先说明 CONTROL_TYPE 枚举和数据覆盖，再给结论。",
+      "expected_output": "动态最新有效日期 + CONTROL_TYPE 1/2/3/4 完整分布 + base/add cost。2026-08-15快照为104/248/142/1222行；数值应现场查询。",
+      "files": [],
+      "expectations": [
+        "动态发现最新 CONTROL_TYPE 有效日期，不硬编码历史日期",
+        "准确解释 CONTROL_TYPE 1/2/3/4 四态",
+        "四态均给样本量、基础消耗、追投消耗",
+        "字段口径使用 BASIC_STAT_COST_FOR_ROI2 与 ADDITIONAL_DELIVERY_STAT_COST_FOR_ROI2_ASSIST",
+        "标注只读、事实截止日和人工复核"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "exception-candidates-violation-missed",
+      "prompt": "哪些素材属于错误追投或漏追投？请用最新 CONTROL_TYPE 有效日，分别列违规追投（按追投消耗从高到低）和漏追投（按基础消耗从高到低）的前10条证据清单，含素材ID、广告主、名称、推直播/推商品、基础消耗、追投消耗和ROI。不要把候选启发式当成正式状态。",
+      "expected_output": "CONTROL_TYPE=2和3的素材级证据清单；按指定指标排序；明确正式状态来自外部表，不反推或编造自动处置规则。",
+      "files": [],
+      "expectations": [
+        "违规追投严格筛 CONTROL_TYPE=2，漏追投严格筛 CONTROL_TYPE=3",
+        "违规按追投消耗降序，漏追投按基础消耗降序",
+        "每行含素材ID、广告主、素材名、GLOBAL_TYPE、基础/追投消耗和ROI证据",
+        "区分正式 CONTROL_TYPE 与 ROI+消耗启发式候选",
+        "不编造停投、回补或自动投放动作"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "base-vs-additional-cost",
+      "prompt": "按最新追投状态日比较基础消耗和追投消耗：四个 CONTROL_TYPE 各自的整体消耗、基础消耗、追投消耗、追投消耗占比是多少？解释三个消耗字段的区别，指出哪些状态理论上没有追投消耗，并报告实际数据。",
+      "expected_output": "按CONTROL_TYPE拆整体/base/add与add share；追投消耗占比=add/(base+add)；CT3/CT4实际追投消耗应为0。",
+      "files": [],
+      "expectations": [
+        "区分 STAT_COST_FOR_ROI2、BASIC_STAT_COST_FOR_ROI2、ADDITIONAL_DELIVERY_STAT_COST_FOR_ROI2_ASSIST",
+        "按 CONTROL_TYPE 给整体/基础/追投消耗",
+        "追投消耗占比使用 add/(base+add)，并说明分母",
+        "核验 CONTROL_TYPE=3/4 的实际追投消耗而不是凭枚举臆测",
+        "结果带最新有效日期与只读声明"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "global-type-breakdown",
+      "prompt": "把最新追投四态按 GLOBAL_TYPE 拆成推直播和推商品两组，比较样本量、基础消耗和追投消耗。注解说0/1，但请以生产表真实存储值为准并标出契约差异。",
+      "expected_output": "按生产真实GLOBAL_TYPE中文值×CONTROL_TYPE矩阵统计；明确注解枚举0/1与真实存储值推直播/推商品的漂移。",
+      "files": [],
+      "expectations": [
+        "按 GLOBAL_TYPE 与 CONTROL_TYPE 双维度分组",
+        "报告推直播和推商品的样本量、基础消耗、追投消耗",
+        "以生产真实存储值为准，不强行把中文值改成0/1",
+        "明确指出 annotation 枚举与生产值的契约漂移",
+        "带最新有效日期与数据覆盖说明"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "top-additional-cost-ranking",
+      "prompt": "列出最新有效日追投消耗最高的前10个素材，并计算每条素材的追投消耗占比。要带素材ID、广告主、名称、GLOBAL_TYPE、CONTROL_TYPE、基础消耗、追投消耗。不要拿云图 COST_RANK 当千川追投排名。",
+      "expected_output": "按ADDITIONAL_DELIVERY_STAT_COST_FOR_ROI2_ASSIST降序Top10；add share=add/(base+add)；不误用云图COST_RANK。",
+      "files": [],
+      "expectations": [
+        "严格按追投调控消耗字段降序取 Top 10",
+        "每行含素材ID、广告主、名称、GLOBAL_TYPE、CONTROL_TYPE、基础/追投消耗",
+        "逐行正确计算 add/(base+add) 追投消耗占比",
+        "不使用 QC_MONTAGE_YUNTU_VIDEO_DATA.COST_RANK 冒充追投排名",
+        "带事实截止日和只读人工复核说明"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "one-hour-assist-metrics",
+      "prompt": "按最新 CONTROL_TYPE 有效日，对比四种追投状态的整体1小时净成交ROI和追投1小时净成交ROI、金额、订单数。要识别 annotation 里小写的 additional_delivery_*_1h_assist 字段，ROI必须按对应消耗加权，不能简单平均。",
+      "expected_output": "使用整体1h字段与小写追投1h assist系列，按CONTROL_TYPE聚合金额/订单/加权ROI；解释支付ROI与净成交1h口径不可混用。",
+      "files": [],
+      "expectations": [
+        "使用 TOTAL_PREPAY_AND_PAY_SETTLE_OVERALL_ROI2_1H 作为整体1h净成交ROI",
+        "识别并使用小写 additional_delivery_*_1h_assist 金额/ROI/订单字段",
+        "追投ROI按追投消耗加权，整体ROI按整体消耗加权，不使用简单AVG",
+        "按 CONTROL_TYPE 1/2/3/4 分组并报告字段覆盖量",
+        "区分支付ROI和1小时净成交ROI口径，带截止日和只读声明"
+      ]
+    }
+  ]
+}

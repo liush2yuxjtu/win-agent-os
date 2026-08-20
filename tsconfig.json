@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "allowImportingTsExtensions": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@agent/*": ["./agent/*"]
+    }
+  },
+  "include": [
+    "agent/**/*.ts",
+    "agent/**/*.tsx",
+    "packages/chat-surface-ui/**/*.ts",
+    "packages/chat-surface-ui/**/*.tsx",
+    "surfaces/standalone/**/*.ts",
+    "surfaces/standalone/**/*.tsx",
+    "scripts/**/*.ts",
+    "scripts/**/*.mts",
+    "scripts/**/*.mjs",
+    "evals/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "surfaces/web",
+    "qc-mcp-server",
+    "agent/skills",
+    "skill-packages",
+    "ai-control-workspace",
+    "packages/glossarizer",
+    "mcp-server",
+    "univer-demo-entry.tsx"
+  ]
+}

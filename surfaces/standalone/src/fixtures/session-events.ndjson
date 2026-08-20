@@ -1,0 +1,11 @@
+{"type":"session.created","data":{"sessionId":"fixture-session","createdAt":"2026-08-19T10:00:00.000Z"},"meta":{"id":"evt_fixture_0000","at":"2026-08-19T10:00:00.000Z"}}
+{"type":"session.started","data":{"runtime":{"agentId":"standalone-fixture","agentName":"standalone-fixture","eveVersion":"0.38.3"}},"meta":{"id":"evt_fixture_0001","at":"2026-08-19T10:00:00.100Z"}}
+{"type":"turn.started","data":{"sequence":0,"turnId":"turn_fixture_0"},"meta":{"id":"evt_fixture_0002","at":"2026-08-19T10:00:00.200Z"}}
+{"type":"message.received","data":{"message":"你好，fixture 会话。","parts":[{"type":"text","text":"你好，fixture 会话。"}],"sequence":0,"turnId":"turn_fixture_0"},"meta":{"id":"evt_fixture_0003","at":"2026-08-19T10:00:00.300Z"}}
+{"type":"step.started","data":{"modelId":"fixture/model","sequence":1,"stepIndex":0,"turnId":"turn_fixture_0"},"meta":{"id":"evt_fixture_0004","at":"2026-08-19T10:00:00.400Z"}}
+{"type":"message.appended","data":{"messageDelta":"你好！","messageSoFar":"你好！","sequence":2,"stepIndex":0,"turnId":"turn_fixture_0"},"meta":{"id":"evt_fixture_0005","at":"2026-08-19T10:00:00.500Z"}}
+{"type":"text.delta","data":{"text":"你好！","turnId":"turn_fixture_0"},"meta":{"id":"evt_fixture_0006","at":"2026-08-19T10:00:00.600Z"}}
+{"type":"message.completed","data":{"finishReason":"stop","message":"你好！这是来自 fixture 回放的回复，不依赖真实 LLM。","sequence":3,"stepIndex":0,"turnId":"turn_fixture_0"},"meta":{"id":"evt_fixture_0007","at":"2026-08-19T10:00:00.700Z"}}
+{"type":"step.completed","data":{"finishReason":"stop","sequence":4,"stepIndex":0,"turnId":"turn_fixture_0","usage":{"inputTokens":32,"outputTokens":16}},"meta":{"id":"evt_fixture_0008","at":"2026-08-19T10:00:00.800Z"}}
+{"type":"turn.completed","data":{"sequence":5,"turnId":"turn_fixture_0"},"meta":{"id":"evt_fixture_0009","at":"2026-08-19T10:00:00.900Z"}}
+{"type":"session.waiting","data":{"continuationToken":"fixture-session","wait":"next-user-message"},"meta":{"id":"evt_fixture_0010","at":"2026-08-19T10:00:01.000Z"}}

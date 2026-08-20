@@ -1,0 +1,20 @@
+{
+  "name": "dsh-shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./platform-web/dashboard-spec-file": "./src/platform-web/dashboard-spec-file.ts",
+    "./qc-dashboard/user-queries": "./src/qc-dashboard/user-queries.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.x",
+    "typescript": "^6.0.3"
+  }
+}

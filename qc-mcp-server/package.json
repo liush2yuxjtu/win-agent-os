@@ -1,0 +1,44 @@
+{
+  "name": "qc-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server serving the QC data dictionary (video_management / WIN_DOUYIN) with read-only SQL querying.",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "qc-mcp-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:stdio": "node dist/index.js --stdio",
+    "self-test": "node dist/index.js --self-test",
+    "dev": "tsx watch src/index.ts",
+    "clean": "rm -rf dist",
+    "test:unit": "tsx evals/unit/run.ts",
+    "test:unit:smoke": "tsx evals/unit/run.ts smoke",
+    "test:unit:fast": "tsx evals/unit/run.ts fast",
+    "test:unit:full": "tsx evals/unit/run.ts full",
+    "sqlgen:check": "tsx evals/sqlgen/index.ts check-db",
+    "sqlgen:smoke": "tsx evals/sqlgen/index.ts smoke",
+    "sqlgen:build": "tsx evals/sqlgen/index.ts build",
+    "sqlgen:review": "tsx evals/sqlgen/index.ts review",
+    "sqlgen:import": "tsx evals/sqlgen/index.ts import"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "dotenv": "^16.6.1",
+    "mssql": "^11.0.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/mssql": "^12.3.0",
+    "@types/node": "^22.20.1",
+    "eve": "^0.38.3",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3"
+  }
+}

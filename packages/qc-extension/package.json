@@ -1,0 +1,41 @@
+{
+  "name": "qc-extension",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "eve extension build",
+    "typecheck": "tsc",
+    "prepare": "eve extension build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "dsh-shared": "*",
+    "zod": "4.4.3"
+  },
+  "peerDependencies": {
+    "eve": "*"
+  },
+  "devDependencies": {
+    "@types/node": "24.x",
+    "eve": "0.38.3",
+    "typescript": "6.0.3",
+    "zod": "4.4.3"
+  },
+  "eve": {
+    "extension": {
+      "source": "./extension",
+      "dist": "./dist/extension"
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "default": "./dist/tools/index.mjs"
+    }
+  }
+}

@@ -1,0 +1,288 @@
+# aro-backend 裁剪决策清单(st_* 精简版)
+
+- 保留 **71** 个 .py + 34 个 st_* 技能 + 11 个 rules + auth/data/基础设施
+- 裁剪 **193** 个 .py + 108 个非 st_* 技能 + prompts/engine 其余
+
+## 保留(理由)
+- **app.algorithms.alg_04_seasonal_decomp** — 被 app.services.forecast_recalc 引用(闭包)
+- **app.algorithms.alg_11_abc_classification** — 被 app.services.forecast_recalc 引用(闭包)
+- **app.algorithms.alg_19_ao_plan** — 被 app.tools.replenishment_tools 引用(闭包)
+- **app.apim_push** — 被 app.routers.order 引用(闭包)
+- **app.config** — 基础设施
+- **app.database** — 基础设施
+- **app.db_factory** — 被 app.database 引用(闭包)
+- **app.db_introspection** — 被 app.database 引用(闭包)
+- **app.engine.agent_runner** — 被 app.routers.customer_workbench 引用(闭包)
+- **app.engine.context_engine** — 被 app.routers.ai 引用(闭包)
+- **app.engine.context_policy** — 被 app.routers.ai 引用(闭包)
+- **app.engine.graph_plan** — 被 app.routers.ai 引用(闭包)
+- **app.engine.graph_plan_templates** — 被 app.routers.ai 引用(闭包)
+- **app.engine.llm_dispatcher** — 被 app.engine.context_engine 引用(闭包)
+- **app.engine.session_manager** — 被 app.routers.ai 引用(闭包)
+- **app.engine.skin_planning_tools** — 被 app.routers.ai 引用(闭包)
+- **app.engine.tool_registry** — 被 app.routers.ai 引用(闭包)
+- **app.engine.tool_result_summarizer** — 被 app.routers.ai 引用(闭包)
+- **app.engine.turn_cancellation** — 被 app.routers.ai 引用(闭包)
+- **app.jd_new_database** — 被 app.services.jd_pcc_imports 引用(闭包)
+- **app.main** — 基础设施
+- **app.middleware.auth** — 种子(st_* 技能依赖/用户指定)
+- **app.models.ai** — 被 app.services.customer_scope 引用(闭包)
+- **app.models.config** — 被 app.services.replenishment 引用(闭包)
+- **app.models.master** — 被 app.services.order_profile_cache 引用(闭包)
+- **app.models.order** — 被 app.services.order_profile_cache 引用(闭包)
+- **app.models.stock** — 被 app.routers.stock 引用(闭包)
+- **app.routers.ai** — 种子(st_* 技能依赖/用户指定)
+- **app.routers.auth** — 种子(st_* 技能依赖/用户指定)
+- **app.routers.customer_workbench** — 种子(st_* 技能依赖/用户指定)
+- **app.routers.order** — 种子(st_* 技能依赖/用户指定)
+- **app.routers.stock** — 种子(st_* 技能依赖/用户指定)
+- **app.schemas.ai** — 被 app.routers.ai 引用(闭包)
+- **app.schemas.common** — 被 app.routers.stock 引用(闭包)
+- **app.schemas.order** — 被 app.routers.order 引用(闭包)
+- **app.schemas.stock** — 被 app.routers.stock 引用(闭包)
+- **app.services.admin_email_otp** — 被 app.routers.auth 引用(闭包)
+- **app.services.akbd_tracking** — 被 app.routers.customer_workbench 引用(闭包)
+- **app.services.ao_utils** — 被 app.services.replenishment 引用(闭包)
+- **app.services.auth** — 种子(st_* 技能依赖/用户指定)
+- **app.services.base_inventory** — 被 app.routers.stock 引用(闭包)
+- **app.services.constraint_guards** — 被 app.routers.customer_workbench 引用(闭包)
+- **app.services.customer_scope** — 被 app.routers.order 引用(闭包)
+- **app.services.forecast_recalc** — 被 app.services.replenishment 引用(闭包)
+- **app.services.inventory_adjustment** — 被 app.services.replenishment 引用(闭包)
+- **app.services.jd_inventory_adapter** — 被 app.services.jd_pcc_imports 引用(闭包)
+- **app.services.jd_pcc_imports** — 被 app.routers.customer_workbench 引用(闭包)
+- **app.services.jd_pcc_tables** — 被 app.services.jd_pcc_imports 引用(闭包)
+- **app.services.jdnew_shave** — 被 app.routers.ai 引用(闭包)
+- **app.services.jdnew_shave_export** — 被 app.routers.ai 引用(闭包)
+- **app.services.login_audit** — 被 app.routers.auth 引用(闭包)
+- **app.services.order_profile_cache** — 被 app.routers.stock 引用(闭包)
+- **app.services.order_profile_migration** — 被 app.database 引用(闭包)
+- **app.services.order_push_target** — 被 app.routers.order 引用(闭包)
+- **app.services.order_rebate** — 被 app.services.order_snapshot 引用(闭包)
+- **app.services.order_refresh** — 被 app.routers.order 引用(闭包)
+- **app.services.order_refresh_diff** — 被 app.routers.order 引用(闭包)
+- **app.services.order_refresh_status** — 被 app.routers.order 引用(闭包)
+- **app.services.order_snapshot** — 被 app.services.replenishment 引用(闭包)
+- **app.services.proposed_order_validity** — 被 app.routers.order 引用(闭包)
+- **app.services.quota_aggregation** — 被 app.services.replenishment 引用(闭包)
+- **app.services.replenishment** — 被 app.routers.order 引用(闭包)
+- **app.services.safety_stock_recalc** — 被 app.services.replenishment 引用(闭包)
+- **app.services.shipto_warehouse_binding** — 被 app.routers.stock 引用(闭包)
+- **app.services.stocking_sku** — 被 app.services.replenishment 引用(闭包)
+- **app.tools.customer_tools** — 种子(st_* 技能依赖/用户指定)
+- **app.tools.jdnew_tools** — 被 app.routers.ai 引用(闭包)
+- **app.tools.order_tools** — 种子(st_* 技能依赖/用户指定)
+- **app.tools.replenishment_tools** — 种子(st_* 技能依赖/用户指定)
+- **app.tools.stock_tools** — 种子(st_* 技能依赖/用户指定)
+- **app.tools.system_tools** — 种子(st_* 技能依赖/用户指定)
+
+## 裁剪(理由)
+- app.__init__ — 无保留集引用
+- app.algorithms.__init__ — 无保留集引用
+- app.algorithms.alg_01_moving_avg — 无保留集引用
+- app.algorithms.alg_02_exp_smoothing — 无保留集引用
+- app.algorithms.alg_03_linear_regression — 无保留集引用
+- app.algorithms.alg_05_safety_stock_classic — 无保留集引用
+- app.algorithms.alg_06_k_matrix — 无保留集引用
+- app.algorithms.alg_07_service_level_opt — 无保留集引用
+- app.algorithms.alg_08_eoq — 无保留集引用
+- app.algorithms.alg_09_dynamic_rop — 无保留集引用
+- app.algorithms.alg_10_multi_echelon — 无保留集引用
+- app.algorithms.alg_12_xyz_classification — 无保留集引用
+- app.algorithms.alg_13_abc_xyz_matrix — 无保留集引用
+- app.algorithms.alg_14_zscore_anomaly — 无保留集引用
+- app.algorithms.alg_15_iqr_anomaly — 无保留集引用
+- app.algorithms.alg_16_trend_change — 无保留集引用
+- app.algorithms.alg_17_slog_fill — 无保留集引用
+- app.algorithms.alg_18_amount_fill — 无保留集引用
+- app.algorithms.alg_19_metric_fill — 无保留集引用
+- app.cs_database — 无保留集引用
+- app.db_upsert — 无保留集引用
+- app.engine.__init__ — 无保留集引用
+- app.engine.confidence_scorer — 无保留集引用
+- app.engine.graph_plan_policy — 无保留集引用
+- app.engine.graph_yaml_router — 无保留集引用
+- app.engine.llm_plan_draft — 无保留集引用
+- app.engine.ontology_injector — 无保留集引用
+- app.engine.packaged_skill_runtime — 无保留集引用
+- app.engine.pbox_config — 无保留集引用
+- app.engine.planning_graph — 无保留集引用
+- app.engine.prompt_builder — 无保留集引用
+- app.engine.rule_documents — 无保留集引用
+- app.engine.skill_manager — 无保留集引用
+- app.engine.task_executor — 无保留集引用
+- app.export_staticfiles — 无保留集引用
+- app.gateway.__init__ — 无保留集引用
+- app.gateway.llm_openai — 无保留集引用
+- app.gateway.mock_llm — 无保留集引用
+- app.i18n.__init__ — 无保留集引用
+- app.i18n.en_US — 无保留集引用
+- app.i18n.zh_CN — 无保留集引用
+- app.middleware.__init__ — 无保留集引用
+- app.middleware.request_diagnostics — 无保留集引用
+- app.models.__init__ — 无保留集引用
+- app.models.chainsight — 无保留集引用
+- app.models.jd — 无保留集引用
+- app.models.jd_new — 无保留集引用
+- app.models.pc — 无保留集引用
+- app.models.pipo — 无保留集引用
+- app.models.psc — 无保留集引用
+- app.models.skin — 无保留集引用
+- app.ontology.__init__ — 无保留集引用
+- app.pc_database — 无保留集引用
+- app.pipo_database — 无保留集引用
+- app.psc_database — 无保留集引用
+- app.routers.__init__ — 无保留集引用
+- app.routers.agent_binding — 无保留集引用
+- app.routers.ai_evolution — 无保留集引用
+- app.routers.ai_facades — 无保留集引用
+- app.routers.ai_settings — 无保留集引用
+- app.routers.algorithm — 无保留集引用
+- app.routers.algorithm_center — 无保留集引用
+- app.routers.autonomy — 无保留集引用
+- app.routers.capability_plaza — 无保留集引用
+- app.routers.dashboard — 无保留集引用
+- app.routers.expert_workbench — 无保留集引用
+- app.routers.inventory_health — 无保留集引用
+- app.routers.jd_slog_import — 无保留集引用
+- app.routers.knowledge — 无保留集引用
+- app.routers.master — 无保留集引用
+- app.routers.memory — 无保留集引用
+- app.routers.message_center — 无保留集引用
+- app.routers.monitor — 无保留集引用
+- app.routers.ontology — 无保留集引用
+- app.routers.order_engine — 无保留集引用
+- app.routers.order_review — 无保留集引用
+- app.routers.perfect_conversion — 无保留集引用
+- app.routers.scheduler_admin — 无保留集引用
+- app.routers.system_admin — 无保留集引用
+- app.scheduler — 无保留集引用
+- app.schemas.__init__ — 无保留集引用
+- app.schemas.master — 无保留集引用
+- app.scripts.__init__ — 无保留集引用
+- app.scripts.jdnew_global_raw_data_query — 无保留集引用
+- app.seed.__init__ — 无保留集引用
+- app.seed.demo_data — 无保留集引用
+- app.seed.gen_pc_skills — 无保留集引用
+- app.seed.pc_demo — 无保留集引用
+- app.seed.pc_demo_v4 — 无保留集引用
+- app.seed.pc_migrate_v4 — 无保留集引用
+- app.seed.pc_ontology — 无保留集引用
+- app.seed_psc — 无保留集引用
+- app.services.__init__ — 无保留集引用
+- app.services.agent_binding — 无保留集引用
+- app.services.algorithm_engine — 无保留集引用
+- app.services.anomaly_detection — 无保留集引用
+- app.services.autonomy_manager — 无保留集引用
+- app.services.batch_trigger — 无保留集引用
+- app.services.capability_introspector — 无保留集引用
+- app.services.context_compressor — 无保留集引用
+- app.services.core_distribution — 无保留集引用
+- app.services.databricks_sync — 无保留集引用
+- app.services.demand_forecast — 无保留集引用
+- app.services.edge_weight_learner — 无保留集引用
+- app.services.embedding_service — 无保留集引用
+- app.services.event_bus — 无保留集引用
+- app.services.evolution_engine — 无保留集引用
+- app.services.feature_flags — 无保留集引用
+- app.services.graph_engine — 无保留集引用
+- app.services.graph_store — 无保留集引用
+- app.services.hook_manager — 无保留集引用
+- app.services.insight_extractor — 无保留集引用
+- app.services.inventory_sync — 无保留集引用
+- app.services.jd_abc_classification — 无保留集引用
+- app.services.jd_day_avg_sales — 无保留集引用
+- app.services.jd_demand_forecast — 无保留集引用
+- app.services.jd_demo_evolution — 无保留集引用
+- app.services.jd_drain_amount — 无保留集引用
+- app.services.jd_drain_quota — 无保留集引用
+- app.services.jd_energy_model — 无保留集引用
+- app.services.jd_final_replenishment — 无保留集引用
+- app.services.jd_kpi_actual_aggregator — 无保留集引用
+- app.services.jd_kpi_observer — 无保留集引用
+- app.services.jd_new_ontology_genesis — 无保留集引用
+- app.services.jd_new_ontology_soul — 无保留集引用
+- app.services.jd_ontology_evolver — 无保留集引用
+- app.services.jd_ontology_genesis — 无保留集引用
+- app.services.jd_ontology_scheduler — 无保留集引用
+- app.services.jd_ontology_soul — 无保留集引用
+- app.services.jd_pcc_intent — 无保留集引用
+- app.services.jd_pcc_result_store — 无保留集引用
+- app.services.jd_replenishment — 无保留集引用
+- app.services.jd_shave_intent — 无保留集引用
+- app.services.jd_shave_result_store — 无保留集引用
+- app.services.jd_skill_ontology_bridge — 无保留集引用
+- app.services.jd_slog_imports — 无保留集引用
+- app.services.jd_utils — 无保留集引用
+- app.services.jd_v23_intent — 无保留集引用
+- app.services.jd_v23_ontology_genesis — 无保留集引用
+- app.services.jd_v23_reflection_demo — 无保留集引用
+- app.services.jd_v23_seed — 无保留集引用
+- app.services.jd_warehouse_ratio — 无保留集引用
+- app.services.jdnew_availability_analysis — 无保留集引用
+- app.services.jdnew_fem — 无保留集引用
+- app.services.jdnew_inventory_analysis — 无保留集引用
+- app.services.jdnew_pcc — 无保留集引用
+- app.services.jdnew_replenishment_template — 无保留集引用
+- app.services.jdnew_sales_velocity_analysis — 无保留集引用
+- app.services.jdnew_shave_summary_export — 无保留集引用
+- app.services.kpi_engine — 无保留集引用
+- app.services.memory_manager — 无保留集引用
+- app.services.message_center — 无保留集引用
+- app.services.ontology_reasoner — 无保留集引用
+- app.services.ontology_snapshot — 无保留集引用
+- app.services.ops_dashboard — 无保留集引用
+- app.services.optimization_loop — 无保留集引用
+- app.services.order_lifecycle — 无保留集引用
+- app.services.outcome_classifier — 无保留集引用
+- app.services.owl_service — 无保留集引用
+- app.services.process_executor — 无保留集引用
+- app.services.process_genesis — 无保留集引用
+- app.services.process_matcher — 无保留集引用
+- app.services.reports — 无保留集引用
+- app.services.safety_stock — 无保留集引用
+- app.services.sg_engine — 无保留集引用
+- app.services.skill_auto_evolver — 无保留集引用
+- app.services.skill_kpi_map — 无保留集引用
+- app.services.skill_tension_calculator — 无保留集引用
+- app.services.skin_ontology_genesis — 无保留集引用
+- app.services.slog_ab — 无保留集引用
+- app.services.tension_prioritiser — 无保留集引用
+- app.services.transduction_engine — 无保留集引用
+- app.services.transduction_types — 无保留集引用
+- app.skills.sk_jdnew_19_fem_replenishment_base_filter.scripts.run — 无保留集引用
+- app.skills.sk_jdnew_20_fem_daily_sales.scripts.run — 无保留集引用
+- app.skills.sk_jdnew_21_fem_ref_sales.scripts.run — 无保留集引用
+- app.skills.sk_jdnew_22_fem_replenishment_qty.scripts.run — 无保留集引用
+- app.tools.__init__ — 无保留集引用
+- app.tools._scope_binding — 无保留集引用
+- app.tools.akbd_tools — 无保留集引用
+- app.tools.algorithm_tools — 无保留集引用
+- app.tools.dynamic_tools — 无保留集引用
+- app.tools.jd_tools — 无保留集引用
+- app.tools.jdnew_slog_tools — 无保留集引用
+- app.tools.kpi_tools — 无保留集引用
+- app.tools.memory_tools — 无保留集引用
+- app.tools.ontology_tools — 无保留集引用
+- app.tools.pc_tools — 无保留集引用
+- app.tools.psc_tools — 无保留集引用
+- app.tools.sandbox_tools — 无保留集引用
+- app.tools.session_search_tools — 无保留集引用
+- app.tools.skill_tools — 无保留集引用
+- app.tools.tool_manage — 无保留集引用
+
+## 非 .py 决策
+- **app/skills/st_*.md**(34)— 保留(用户指定 st_* 系列)
+- **app/skills/其余 108 项**(sk_jd/sk_jdnew/sk_pc/sk_psc/sk_shave/sk_skin + FEM 目录 + references)— 裁剪(非 st_ 业务线)
+- **app/rules/aro/**(11 个 .md)— 保留(st_* 技能引用的 Canonical Rule:forecast/replenishment/safety_stock/ao_plan/slog_fill/allotment/abc_classification/amount_fill/skill_routing/feedback_update/README)
+- **app/prompts/ct_*.md** — 裁剪(被裁 engine/prompt_builder 使用)
+- **data/** — 保留本地(用户指定,gitignored)
+- **顶层 _*.py 诊断脚本**(26)— 裁剪(一次性诊断)
+- **import_*.py / recalc_*.py / sync_skills.py / check_db.py** — 裁剪(业务侧数据脚本;sync_skills 若需保留可议)
+- **scripts/**(11 个迁移/导入)— 裁剪(数据迁移一次性)
+- **tests/** — 裁剪(测试多为被裁业务;保留项后续补)
+- **run.py / requirements.txt / .env.example / README.md** — 保留(运行基础设施)
+
+## 需修改
+- **app/main.py** — 只注册保留路由(auth/ai/customer_workbench/order/stock)
+- **app/routers/__init__.py** — 随 main.py 调整

@@ -1,0 +1,5 @@
+{
+  "name": "aro",
+  "description": "aro 业务组合：只挂 aro + dashboard（不含 qc / exa）",
+  "extensions": ["aro", "dashboard"]
+}

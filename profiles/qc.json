@@ -1,0 +1,5 @@
+{
+  "name": "qc",
+  "description": "QC 数据组合：只挂 qc + dashboard",
+  "extensions": ["qc", "dashboard"]
+}

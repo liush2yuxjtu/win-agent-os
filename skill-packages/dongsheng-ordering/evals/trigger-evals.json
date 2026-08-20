@@ -1,0 +1,27 @@
+[
+  {
+    "query": "好饿啊，中午有什么吃的推荐吗",
+    "should_trigger": true,
+    "note": "「饿了」是隐性点餐信号，没说「点菜」也应触发"
+  },
+  {
+    "query": "中午12点了还在赶需求，午饭都没吃",
+    "should_trigger": true,
+    "note": "时间+工作场景暗示需要点餐，应触发"
+  },
+  {
+    "query": "中午吃什么好，帮我看看",
+    "should_trigger": true,
+    "note": "时间+选择困难场景，应触发推荐"
+  },
+  {
+    "query": "帮我查一下这周的会议安排",
+    "should_trigger": false,
+    "note": "负例：工作日程，与点餐无关"
+  },
+  {
+    "query": "这顿午饭预算50以内，来几个硬菜",
+    "should_trigger": true,
+    "note": "预算筛选点餐场景"
+  }
+]

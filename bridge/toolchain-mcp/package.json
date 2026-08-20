@@ -1,0 +1,15 @@
+{
+  "name": "toolchain-mcp",
+  "version": "1.0.0",
+  "description": "受控二进制执行器 MCP server：技能脚本（tsx）、git 只读、白名单 python。",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "smoke": "node smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^3.25.76"
+  }
+}

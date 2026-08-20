@@ -1,0 +1,37 @@
+{
+  "name": "aro-extension",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "eve": {
+    "extension": {
+      "source": "./extension",
+      "dist": "./dist/extension"
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "default": "./dist/tools/index.mjs"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "eve extension build"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "peerDependencies": {
+    "eve": "0.38.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "eve": "0.38.3",
+    "typescript": "^5.7.0"
+  }
+}

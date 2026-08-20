@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "glossary": {
+      "command": "npx",
+      "args": ["tsx", "/Users/liushiyuwin/MCP_connect_skill/mcp-server/server.ts"]
+    }
+  }
+}

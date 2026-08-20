@@ -1,0 +1,29 @@
+{
+  "skill_name": "edit-dashboard",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我把看板改成第一行三张卡第二行两张卡，加个标题，卡片之间留点空隙",
+      "expected_output": "生成看板类 json-render spec：root/elements 结构，5 张 Card 全部用 ${/kpis/N/...} 模板引用（不写死数值），布局为 3+2 两行 Grid + Heading 标题",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我把看板改坏了，帮我恢复成基础款的样子",
+      "expected_output": "生成基础款看板 spec：5 张指标卡全部用 ${/kpis/N/...} 模板引用，不写死数值",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "近7日成交956万，广告消耗335万，帮我分析一下ROI表现怎么样，要不要加预算",
+      "expected_output": "不生成看板 spec（纯数据分析问答），没有 /kpis/ 模板引用",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "把 topMaterials 查询的消耗数据画成一张柱状图卡（看板里现在只有它的表格），加到看板里",
+      "expected_output": "生成看板类 json-render spec：新增 BarChart 卡用 dataRef 数据绑定（queryId 为 fixed:topMaterials 或 user: 前缀 + field: rows），不写死数值；流程为先 dashboard_read 再 dashboard_create，最后 render_ui 预览",
+      "files": []
+    }
+  ]
+}

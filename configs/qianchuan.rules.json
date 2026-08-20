@@ -1,0 +1,44 @@
+{
+  "domain": "qianchuan",
+  "version": "3.0",
+  "rules": [
+    {
+      "name": "ROI达标",
+      "expression": "IF({支付ROI} > {ROI 合格基线} AND {整体消耗} > 1000, TRUE, FALSE)",
+      "terms": [
+        "支付ROI",
+        "ROI 合格基线"
+      ],
+      "owner": "业务专家·追投运营",
+      "note": "支付ROI 达到品线合格基线才算达标；基线动态查 QC_MONTAGE_PRODUCT，不硬编码",
+      "version": "2",
+      "action": {
+        "name": "启动追投",
+        "type": "start",
+        "trigger": "支付ROI ≥ 基线 且 当日消耗 ≥ 1000 时启动追投（专家修订）",
+        "owner": "追投运营",
+        "params": {
+          "上限倍数": "min(ROI/基线, 3)",
+          "复核频率": "每日"
+        }
+      }
+    },
+    {
+      "name": "周ROI达标",
+      "expression": "IF({本周平均ROI} > {ROI 合格基线}, TRUE, FALSE)",
+      "terms": [
+        "本周平均ROI",
+        "ROI 合格基线"
+      ],
+      "owner": "业务专家·追投运营",
+      "note": "本周平均ROI 是加权口径：SUM(本周整体成交金额)/SUM(本周整体消耗)，禁止简单平均各素材 ROI",
+      "version": "2",
+      "action": {
+        "name": "周度复核追投池",
+        "type": "review",
+        "trigger": "周加权ROI 达标时人工复核追投池，不自动执行",
+        "owner": "追投运营"
+      }
+    }
+  ]
+}

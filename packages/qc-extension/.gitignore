@@ -1,0 +1,9 @@
+node_modules
+.eve
+.vercel
+.output
+.nitro
+.eve-extension-build-*
+dist
+.DS_Store
+*.tsbuildinfo

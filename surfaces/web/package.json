@@ -1,0 +1,19 @@
+{
+  "name": "surfaces-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "env -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY -u http_proxy -u https_proxy -u all_proxy next dev",
+    "dev:frontend": "env -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY -u http_proxy -u https_proxy -u all_proxy EVE_FRONTEND_ONLY=1 next dev",
+    "build": "rm -rf .next/cache && next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@chat-surface-ui/core": "*",
+    "next": "16.3.0-preview.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  }
+}

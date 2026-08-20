@@ -1,0 +1,400 @@
+{
+  "root": "main",
+  "elements": {
+    "main": {
+      "type": "Stack",
+      "props": {
+        "direction": "vertical",
+        "gap": "md",
+        "className": "w-full"
+      },
+      "children": [
+        "banner",
+        "kpiGrid",
+        "chartCard",
+        "topTable",
+        "qualityRow"
+      ]
+    },
+    "banner": {
+      "type": "Card",
+      "props": {
+        "title": "数据口径",
+        "description": "所有数字来自经营数据仓库的固定汇总，计算规则统一维护，展示前不做临时改动。",
+        "maxWidth": "full",
+        "className": "rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": []
+    },
+    "kpiGrid": {
+      "type": "Grid",
+      "props": {
+        "columns": 5,
+        "gap": "md",
+        "className": "w-full"
+      },
+      "children": [
+        "k0",
+        "k1",
+        "k2",
+        "k3",
+        "k4"
+      ]
+    },
+    "k0": {
+      "type": "Card",
+      "props": {
+        "maxWidth": "full",
+        "className": "rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": [
+        "k0Body"
+      ]
+    },
+    "k1": {
+      "type": "Card",
+      "props": {
+        "maxWidth": "full",
+        "className": "rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": [
+        "k1Body"
+      ]
+    },
+    "k2": {
+      "type": "Card",
+      "props": {
+        "maxWidth": "full",
+        "className": "rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": [
+        "k2Body"
+      ]
+    },
+    "k3": {
+      "type": "Card",
+      "props": {
+        "maxWidth": "full",
+        "className": "rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": [
+        "k3Body"
+      ]
+    },
+    "k4": {
+      "type": "Card",
+      "props": {
+        "maxWidth": "full",
+        "className": "rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": [
+        "k4Body"
+      ]
+    },
+    "chartCard": {
+      "type": "Card",
+      "props": {
+        "title": "近 7 日成交与消耗",
+        "description": "每日原始汇总走势",
+        "maxWidth": "full",
+        "className": "rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": [
+        "chart"
+      ]
+    },
+    "chart": {
+      "type": "BarChart",
+      "props": {
+        "dataRef": {
+          "queryId": "fixed:daily",
+          "field": "rows"
+        },
+        "xKey": "stat_date",
+        "filter": {
+          "key": "period",
+          "value": "current"
+        },
+        "series": [
+          {
+            "key": "gmv",
+            "color": "#20241f",
+            "label": "成交金额"
+          },
+          {
+            "key": "spend",
+            "color": "#a7b58d",
+            "label": "广告消耗"
+          }
+        ]
+      },
+      "children": []
+    },
+    "topTable": {
+      "type": "Card",
+      "props": {
+        "title": "高消耗素材明细",
+        "description": "近 7 日按广告消耗排序；ROI 与单均成本按统一口径计算",
+        "maxWidth": "full",
+        "className": "rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": [
+        "topTableInner"
+      ]
+    },
+    "topTableInner": {
+      "type": "Table",
+      "props": {
+        "dataRef": {
+          "queryId": "fixed:topMaterials",
+          "field": "rows"
+        }
+      },
+      "children": []
+    },
+    "qualityRow": {
+      "type": "Stack",
+      "props": {
+        "direction": "horizontal",
+        "gap": "md",
+        "align": "stretch",
+        "className": "w-full"
+      },
+      "children": [
+        "qualityCard",
+        "queryCard"
+      ]
+    },
+    "qualityCard": {
+      "type": "Card",
+      "props": {
+        "title": "数据质量",
+        "description": "数据校验明细（固定脚本 + 统一口径）",
+        "maxWidth": "full",
+        "className": "flex-1 rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": []
+    },
+    "queryCard": {
+      "type": "Card",
+      "props": {
+        "title": "数据来源与口径",
+        "description": "数据来自经营数据仓库固定汇总脚本",
+        "maxWidth": "full",
+        "className": "flex-1 rounded-[20px] border-black/7 bg-[#fbfaf6] shadow-[0_12px_40px_rgba(35,38,31,.04)]"
+      },
+      "children": []
+    },
+    "k0Body": {
+      "type": "Stack",
+      "props": {
+        "direction": "vertical",
+        "gap": "sm"
+      },
+      "children": [
+        "k0Label",
+        "k0Value",
+        "k0Delta"
+      ]
+    },
+    "k0Label": {
+      "type": "Text",
+      "props": {
+        "variant": "muted",
+        "text": {
+          "$template": "${/kpis/0/label}"
+        }
+      },
+      "children": []
+    },
+    "k0Value": {
+      "type": "Heading",
+      "props": {
+        "level": "h2",
+        "text": {
+          "$template": "${/kpis/0/value}"
+        }
+      },
+      "children": []
+    },
+    "k0Delta": {
+      "type": "Badge",
+      "props": {
+        "variant": "outline",
+        "text": {
+          "$template": "${/kpis/0/change}"
+        }
+      },
+      "children": []
+    },
+    "k1Body": {
+      "type": "Stack",
+      "props": {
+        "direction": "vertical",
+        "gap": "sm"
+      },
+      "children": [
+        "k1Label",
+        "k1Value",
+        "k1Delta"
+      ]
+    },
+    "k1Label": {
+      "type": "Text",
+      "props": {
+        "variant": "muted",
+        "text": {
+          "$template": "${/kpis/1/label}"
+        }
+      },
+      "children": []
+    },
+    "k1Value": {
+      "type": "Heading",
+      "props": {
+        "level": "h2",
+        "text": {
+          "$template": "${/kpis/1/value}"
+        }
+      },
+      "children": []
+    },
+    "k1Delta": {
+      "type": "Badge",
+      "props": {
+        "variant": "outline",
+        "text": {
+          "$template": "${/kpis/1/change}"
+        }
+      },
+      "children": []
+    },
+    "k2Body": {
+      "type": "Stack",
+      "props": {
+        "direction": "vertical",
+        "gap": "sm"
+      },
+      "children": [
+        "k2Label",
+        "k2Value",
+        "k2Delta"
+      ]
+    },
+    "k2Label": {
+      "type": "Text",
+      "props": {
+        "variant": "muted",
+        "text": {
+          "$template": "${/kpis/2/label}"
+        }
+      },
+      "children": []
+    },
+    "k2Value": {
+      "type": "Heading",
+      "props": {
+        "level": "h2",
+        "text": {
+          "$template": "${/kpis/2/value}"
+        }
+      },
+      "children": []
+    },
+    "k2Delta": {
+      "type": "Badge",
+      "props": {
+        "variant": "outline",
+        "text": {
+          "$template": "${/kpis/2/change}"
+        }
+      },
+      "children": []
+    },
+    "k3Body": {
+      "type": "Stack",
+      "props": {
+        "direction": "vertical",
+        "gap": "sm"
+      },
+      "children": [
+        "k3Label",
+        "k3Value",
+        "k3Delta"
+      ]
+    },
+    "k3Label": {
+      "type": "Text",
+      "props": {
+        "variant": "muted",
+        "text": {
+          "$template": "${/kpis/3/label}"
+        }
+      },
+      "children": []
+    },
+    "k3Value": {
+      "type": "Heading",
+      "props": {
+        "level": "h2",
+        "text": {
+          "$template": "${/kpis/3/value}"
+        }
+      },
+      "children": []
+    },
+    "k3Delta": {
+      "type": "Badge",
+      "props": {
+        "variant": "outline",
+        "text": {
+          "$template": "${/kpis/3/change}"
+        }
+      },
+      "children": []
+    },
+    "k4Body": {
+      "type": "Stack",
+      "props": {
+        "direction": "vertical",
+        "gap": "sm"
+      },
+      "children": [
+        "k4Label",
+        "k4Value",
+        "k4Delta"
+      ]
+    },
+    "k4Label": {
+      "type": "Text",
+      "props": {
+        "variant": "muted",
+        "text": {
+          "$template": "${/kpis/4/label}"
+        }
+      },
+      "children": []
+    },
+    "k4Value": {
+      "type": "Heading",
+      "props": {
+        "level": "h2",
+        "text": {
+          "$template": "${/kpis/4/value}"
+        }
+      },
+      "children": []
+    },
+    "k4Delta": {
+      "type": "Badge",
+      "props": {
+        "variant": "outline",
+        "text": {
+          "$template": "${/kpis/4/change}"
+        }
+      },
+      "children": []
+    }
+  },
+  "state": {}
+}

@@ -1,0 +1,16 @@
+{
+  "name": "qc-mcp-http-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "smoke": "node smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
