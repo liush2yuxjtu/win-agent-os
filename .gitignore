@@ -44,9 +44,10 @@ surfaces/web/data/skill-evals.db
 surfaces/web/public/winbrain/output
 .eve-extension-build-*/
 
-# Python 编译缓存(aro backend)
+# Python 编译缓存与隔离环境
 __pycache__/
 .venv/
+semantica-mcp-server/.state/
 
 # 可见性矩阵本地库(运行时数据)
 surfaces/web/data/visibility.db

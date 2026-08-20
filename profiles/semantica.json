@@ -1,0 +1,5 @@
+{
+  "name": "semantica",
+  "description": "Semantica 知识图组合：semantica + dashboard",
+  "extensions": ["semantica", "dashboard"]
+}

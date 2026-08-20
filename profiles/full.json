@@ -1,5 +1,5 @@
 {
   "name": "full",
-  "description": "全量组合：aro + dashboard + qc + exa（默认，保持现有行为）",
-  "extensions": ["aro", "dashboard", "qc", "exa"]
+  "description": "全量组合：aro + dashboard + qc + exa + semantica",
+  "extensions": ["aro", "dashboard", "qc", "exa", "semantica"]
 }

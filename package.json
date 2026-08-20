@@ -88,7 +88,8 @@
     "aro-extension": "workspace:*",
     "qc-extension": "workspace:*",
     "exa-extension": "workspace:*",
-    "dashboard-extension": "workspace:*"
+    "dashboard-extension": "workspace:*",
+    "semantica-extension": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.x",
@@ -115,6 +116,7 @@
     "packages/dashboard-extension",
     "surfaces/standalone",
     "surfaces/web",
-    "packages/aro-extension"
+    "packages/aro-extension",
+    "packages/semantica-extension"
   ]
 }

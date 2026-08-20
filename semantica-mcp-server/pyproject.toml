@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "semantica-mcp-server"
+version = "0.1.0"
+description = "Streamable HTTP MCP sidecar that builds a Semantica graph from QC raw_files"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "semantica==0.6.5",
+  "python-dotenv==1.2.3",
+  "starlette==0.47.3",
+  "uvicorn==0.35.0",
+  "mcp==1.29.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "httpx==0.28.1",
+  "pytest==8.4.1",
+]
+
+[project.scripts]
+semantica-mcp-server = "semantica_mcp_server.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/semantica_mcp_server"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
